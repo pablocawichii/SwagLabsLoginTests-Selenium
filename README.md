@@ -8,3 +8,6 @@ All it does is run user tests for a:
 - Problematic User
 - Poor Network User
 - No User
+
+## Edit 1
+Now it does tests on the shopping cart adding and checking process.

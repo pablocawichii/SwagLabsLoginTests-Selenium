@@ -1,5 +1,6 @@
 # Import of driver
 from selenium import webdriver
+from selenium.common import exceptions
 
 # Import of Key for Enter
 from selenium.webdriver.common.keys import Keys
@@ -44,8 +45,6 @@ def login(driver, username,password):
                 (By.XPATH,
                     "//span[@class='title']")))
         return product.text
-
-
 
 
 ## Run with specific inputs
