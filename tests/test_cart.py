@@ -1,7 +1,8 @@
 from selenium import webdriver
 import pytest
-import run
-import cart
+
+import src.login_page as login_page
+import src.products_page as products_page
 
 
 # Open a new instance for each test
@@ -16,31 +17,29 @@ def test_add_not_logged_in(driver):
     list_of_products = [
         "Sauce Labs Backpack", "Test.allTheThings() T-Shirt (Red)"
     ]
-    res = cart.add_products(driver, list_of_products)
+    assert products_page.ProductsPage(driver).add_products(list_of_products) == "Wrong Page"
     driver.quit()
-    assert res == "User at login page"
 
 
 # Test a standard user
 def test_add_logged_in(driver):
-    run.login(driver, "standard_user", "secret_sauce")
-
     list_of_products = [
         "Sauce Labs Backpack", "Test.allTheThings() T-Shirt (Red)"
     ]
-    res = cart.add_products(driver, list_of_products)
+
+    ProductsPage = login_page.LoginPage(driver).login("standard_user", "secret_sauce")
+    assert ProductsPage.add_products(list_of_products) == "Success"
     driver.quit()
-    assert res == "Success"
 
 
 # Test a standard user
 def test_cart_logged_in(driver):
-    run.login(driver, "standard_user", "secret_sauce")
-
     list_of_products = [
         "Sauce Labs Backpack", "Test.allTheThings() T-Shirt (Red)"
     ]
-    cart.add_products(driver, list_of_products)
-    res = cart.are_products_in_cart(driver, list_of_products)
+
+    ProductsPage = login_page.LoginPage(driver).login("standard_user", "secret_sauce")
+    ProductsPage.add_products(list_of_products)
+    CartPage = ProductsPage.goto_Cart_page()
+    assert CartPage.are_products_in_cart(list_of_products) == "Success"
     driver.quit()
-    assert res == "Success"

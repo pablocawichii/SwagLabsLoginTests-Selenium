@@ -1,51 +1,7 @@
 # Import of driver
 from selenium import webdriver
-from selenium.common import exceptions
 
-# Import of Key for Enter
-from selenium.webdriver.common.keys import Keys
-
-# Used for Explicit Wait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-# Import of TimoutException
-from selenium.common.exceptions import TimeoutException
-
-# The login function
-def login(driver, username,password):
-    # The username input and keystrokes
-    user = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
-            (By.ID,
-            "user-name")))
-    user.send_keys(username)
-
-    # The password input and keystrokes and submit of form
-    passw = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "password")))
-    passw.send_keys(password, Keys.ENTER)
-
-    # Looking for error. 3 seconds to account for latency
-    try:
-        err = WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located(
-                (By.XPATH,
-                 "//div[@class='error-message-container error']/h3")))
-        # If Error, return error text
-        return err.text
-    # Error Times out, ie. No Error.
-    # Ensuring proper login to products page.
-    # 15 seconds to account for user latency
-    except TimeoutException:
-        # The product Header
-        product = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located(
-                (By.XPATH,
-                    "//span[@class='title']")))
-        return product.text
-
+import src.login_page as login_page
 
 ## Run with specific inputs
 if __name__ == '__main__':
@@ -55,4 +11,14 @@ if __name__ == '__main__':
     username = "standard_user"
     password = "secret_sauce"
 
-    print(login(driver, username, password))
+    ProductsPage = login_page.LoginPage(driver).login(username, password)
+
+    list_of_products = [
+        "Sauce Labs Backpack", "Test.allTheThings() T-Shirt (Red)"
+    ]
+    ProductsPage.add_products(list_of_products)
+    CartPage = ProductsPage.goto_Cart_page()
+    print(CartPage.are_products_in_cart(list_of_products))
+
+
+    driver.quit()
